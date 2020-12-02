@@ -7,19 +7,33 @@ import (
 )
 
 func ParseFileOfInts(in string) ([]int, error) {
-	f, err := os.Open(in)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
 	res := make([]int, 0)
-	s := bufio.NewScanner(f)
-	for s.Scan() {
-		i, err := strconv.Atoi(s.Text())
+	err := ParseFileLineByLine(in, func(line string) error {
+		i, err := strconv.Atoi(line)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		res = append(res, i)
+		return nil
+	})
+	return res, err
+}
+
+func ParseFileLineByLine(in string, fn func(line string) error) error {
+	f, err := os.Open(in)
+	if err != nil {
+		return err
 	}
-	return res, nil
+	defer f.Close()
+	s := bufio.NewScanner(f)
+	for s.Scan() {
+		if err := fn(s.Text()); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func Xor(a, b bool) bool {
+	return (a || b) && (!a || !b)
 }
