@@ -31,7 +31,7 @@ func ParseFileLineByLine(in string, fn func(line string) error) error {
 			return err
 		}
 	}
-	return nil
+	return s.Err()
 }
 
 func Xor(a, b bool) bool {
